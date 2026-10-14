@@ -1,5 +1,5 @@
 import { chat } from "./llm.ts";
-import { runTool, toolSchemas } from "./tools/index.ts";
+import { runTool, tools } from "./tools/index.ts";
 import type { Message } from "./types.ts";
 
 export class Agent {
@@ -9,7 +9,7 @@ export class Agent {
     this.messages.push({ role: "user", content: userMessage });
 
     while (true) {
-      const message = await chat(this.messages, toolSchemas);
+      const message = await chat(this.messages, tools);
       this.messages.push(message);
 
       if (message.role !== "assistant" || !message.tool_calls) return message.content;
