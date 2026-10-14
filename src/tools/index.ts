@@ -1,0 +1,21 @@
+import type { Tool, ToolCall } from "../types.ts";
+import { listFiles } from "./list_files.ts";
+import { readFile } from "./read_file.ts";
+
+const tools: Tool[] = [readFile, listFiles];
+
+// api format
+export const toolSchemas = tools.map(({ name, description, parameters }) => ({
+  type: "function",
+  function: { name, description, parameters },
+}));
+
+export async function runTool(call: ToolCall): Promise<string> {
+  const tool = tools.find((t) => t.name === call.function.name);
+  if (!tool) return `unknown tool: ${call.function.name}`;
+  try {
+    return await tool.run(JSON.parse(call.function.arguments));
+  } catch (err) {
+    return `error: ${err}`;
+  }
+}
